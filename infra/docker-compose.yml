@@ -1,35 +1,52 @@
 version: "3.9"
 services:
-  db:
-    image: postgres:16
-    environment:
-      POSTGRES_DB: luxdb       # database name
-      POSTGRES_USER: lux       # dev username
-      POSTGRES_PASSWORD: luxpwd# dev password
-    ports: ["5432:5432"]
-    volumes:
-      - dbdata:/var/lib/postgresql/data
-      # auto create schema on first start
-      - ./scripts/init_db.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
-
   airflow-db:
     image: postgres:16
     environment:
       POSTGRES_DB: airflow
       POSTGRES_USER: airflow
       POSTGRES_PASSWORD: airflow
-    volumes: [ "airflowdb:/var/lib/postgresql/data" ]
+    volumes:
+      - airflowdb:/var/lib/postgresql/data
 
   airflow:
     image: apache/airflow:2.9.3
-    depends_on: [airflow-db, db]
+    depends_on:
+      airflow-db:
+        condition: service_started
     environment:
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-db:5432/airflow
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
-    command: bash -c "airflow db upgrade && airflow users create --username admin --password admin --firstname a --lastname a --role Admin --email a@a.a && airflow webserver & airflow scheduler"
+    command: >
+      bash -c "airflow db upgrade &&
+               airflow users create --username admin --password admin --firstname admin --lastname user --role Admin --email admin@example.com &&
+               exec airflow webserver"
     ports: ["8081:8080"]
     volumes:
       - ../etl/airflow/dags:/opt/airflow/dags
+
+  scheduler:
+    image: apache/airflow:2.9.3
+    depends_on:
+      - airflow
+    environment:
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-db:5432/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    command: ["airflow","scheduler"]
+    volumes:
+      - ../etl/airflow/dags:/opt/airflow/dags
+ # NEW: your project database
+  project-db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: luxdb
+      POSTGRES_USER: lux
+      POSTGRES_PASSWORD: luxpwd
+    ports: ["5432:5432"]  # optional; handy for connecting with a GUI
+    volumes:
+      - projectdb:/var/lib/postgresql/data
+      - ./scripts/init_project_db.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
+
 volumes:
-  dbdata:
   airflowdb:
+  projectdb:
