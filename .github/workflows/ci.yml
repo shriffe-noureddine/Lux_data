@@ -1,0 +1,11 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  sanity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Basic checks
+        run: |
+          test -f README.md
+          echo "OK"
