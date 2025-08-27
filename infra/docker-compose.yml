@@ -10,7 +10,9 @@ services:
       - airflowdb:/var/lib/postgresql/data
 
   airflow:
-    image: apache/airflow:2.9.3
+    build:
+      context: ../etl/airflow
+      dockerfile: Dockerfile
     depends_on:
       airflow-db:
         condition: service_started
@@ -30,7 +32,9 @@ services:
       - airflowlogs:/opt/airflow/logs 
 
   scheduler:
-    image: apache/airflow:2.9.3
+    build:
+      context: ../etl/airflow
+      dockerfile: Dockerfile
     depends_on:
       - airflow
     environment:
