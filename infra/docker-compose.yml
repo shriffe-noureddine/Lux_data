@@ -15,8 +15,11 @@ services:
       airflow-db:
         condition: service_started
     environment:
+      AIRFLOW__WEBSERVER__SECRET_KEY: "dev-shared-secret" 
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-db:5432/airflow
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW_CONN_LUXDB: postgresql+psycopg2://lux:luxpwd@project-db:5432/luxdb
+      AIRFLOW__LOGGING__BASE_LOG_FOLDER: /opt/airflow/logs
     command: >
       bash -c "airflow db upgrade &&
                airflow users create --username admin --password admin --firstname admin --lastname user --role Admin --email admin@example.com &&
@@ -24,17 +27,22 @@ services:
     ports: ["8081:8080"]
     volumes:
       - ../etl/airflow/dags:/opt/airflow/dags
+      - airflowlogs:/opt/airflow/logs 
 
   scheduler:
     image: apache/airflow:2.9.3
     depends_on:
       - airflow
     environment:
+      AIRFLOW__WEBSERVER__SECRET_KEY: "dev-shared-secret" 
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-db:5432/airflow
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW_CONN_LUXDB: postgresql+psycopg2://lux:luxpwd@project-db:5432/luxdb
+      AIRFLOW__LOGGING__BASE_LOG_FOLDER: /opt/airflow/logs
     command: ["airflow","scheduler"]
     volumes:
       - ../etl/airflow/dags:/opt/airflow/dags
+      - airflowlogs:/opt/airflow/logs
  # NEW: your project database
   project-db:
     image: postgres:16
@@ -50,3 +58,4 @@ services:
 volumes:
   airflowdb:
   projectdb:
+  airflowlogs:
