@@ -27,3 +27,10 @@ create table if not exists canary(
   ts timestamptz default now(),
   note text
 );
+
+create table if not exists kpi_daily(
+  dt date not null,
+  metric text not null,
+  value numeric not null,
+  primary key (dt, metric)
+);
