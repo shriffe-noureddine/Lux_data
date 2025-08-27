@@ -18,7 +18,6 @@ CSV_PATH = Path("/opt/airflow/dags/data/mobility_sample.csv")
 def upsert_location(cur, name):
     """
     Insert the location if missing and return its id.
-    Kept simple for demo: name is unique enough here.
     """
     cur.execute("select id from locations where name = %s limit 1", (name,))
     row = cur.fetchone()

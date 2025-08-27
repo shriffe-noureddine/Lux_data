@@ -50,7 +50,7 @@ services:
       POSTGRES_DB: luxdb
       POSTGRES_USER: lux
       POSTGRES_PASSWORD: luxpwd
-    ports: ["5432:5432"]  # optional; handy for connecting with a GUI
+    ports: ["5432:5432"]
     volumes:
       - projectdb:/var/lib/postgresql/data
       - ./scripts/init_project_db.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
