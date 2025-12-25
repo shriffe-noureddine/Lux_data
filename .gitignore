@@ -1,0 +1,39 @@
+# OS/Editors
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.env
+.env.*
+
+# Java/Maven
+api/target/
+api/.mvn/wrapper/maven-wrapper.jar
+*.log
+
+# Airflow
+etl/airflow/logs/
+etl/airflow/*.pid
+
+# Docker
+**/.docker/
+**/tmp/
+**/.cache/
+
+# Power BI
+bi/powerbi/*.pbix
+bi/powerbi/*.pbix.local
+bi/powerbi/*.pbit.local
+
+# Data
+data/
+*.csv
+*.parquet
+
+# Node (if added later)
+node_modules/
